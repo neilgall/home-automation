@@ -3,9 +3,6 @@ gardenpi
 pirrigator
 veluxpi
 
-[master]
-mustela
-
 [raspberrypi:vars]
 ansible_python_interpreter=/usr/bin/python
 ansible_user=alarm

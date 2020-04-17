@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mount {{nfs_mount_local}}
 test -d {{nfs_mount_local}}/images || exit 1
 
 cd /tmp

@@ -7,7 +7,8 @@
     src: "{{nfs_mount_remote}}"
     fstype: nfs
     opts: rw
-    state: present
+    state: mounted
+
 
 - name: Install Timelapse systemd timer
   template:
@@ -16,6 +17,7 @@
     owner: root
     group: root
 
+
 - name: Install Timelapse systemd service
   template:
     src: templates/systemd/timelapse.service
@@ -23,12 +25,14 @@
     owner: root
     group: root
 
+
 - name: Install Timelapse scripts
   template:
     src: templates/scripts/timelapse.sh
     dest: "{{timelapse_executable}}"
     owner: root
     group: root
+
 
 - name: Start Timelapse systemd timer
   systemd:

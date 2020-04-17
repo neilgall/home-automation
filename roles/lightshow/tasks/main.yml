@@ -5,6 +5,7 @@
   pip:
     name: AWSIoTPythonSDK,requests,RPi.GPIO
 
+
 - name: Install Lightshow systemd service
   register: lightshow_systemd
   template:
@@ -13,12 +14,14 @@
     owner: root
     group: root
 
+
 - name: Install Lightshow scripts
   copy:
     src: files/scripts/
     dest: "{{lightshow_install_dir}}"
     owner: root
     group: root
+
 
 - name: Start Lightshow systemd service
   when: lightshow_systemd.changed
@@ -27,3 +30,12 @@
     name: lightshow.service
     state: started
     enabled: yes
+
+
+- name: Set Lightshow host boot configuration
+  copy:
+    src: files/boot/config.txt
+    dest: /boot/config.txt
+    owner: root
+    group: root
+    
