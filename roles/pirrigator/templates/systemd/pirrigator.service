@@ -1,0 +1,15 @@
+[Unit]
+Description=Automated Irrigation Service
+
+[Service]
+Type=simple
+WorkingDirectory={{pirrigator_config_dir}}
+ExecStart={{pirrigator_executable}}
+ExecStopPost={{reset_gpio_executable}}
+StandardOutput=syslog
+StandardError=syslog
+Restart=on-failure
+Environment="RUST_LOG=debug"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+---
+# vars file for pirrigator
+
+pirrigator_config_dir: /var/lib/pirrigator
+pirrigator_executable: /usr/local/bin/pirrigator
+reset_gpio_executable: /usr/local/bin/reset-gpio.sh
+

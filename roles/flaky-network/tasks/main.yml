@@ -1,0 +1,37 @@
+---
+# tasks file for flaky-network
+
+- name: copy network-restart script
+  copy:
+    src: files/scripts/network-restart.sh
+    dest: /usr/local/bin/network-restart.sh
+    owner: root
+    group: root
+
+
+- name: copy network-restart systemd timer unit
+  register: network_restart_systemd
+  copy:
+    src: files/systemd/network-restart.timer
+    dest: /lib/systemd/system/network-restart.timer
+    owner: root
+    group: root
+
+
+- name: copy network-restart systemd service unit
+  register: network_restart_systemd
+  copy:
+    src: files/systemd/network-restart.service
+    dest: /lib/systemd/system/network-restart.service
+    owner: root
+    group: root
+
+
+- name: start network-restart timer
+  when: network_restart_systemd.changed
+  systemd:
+    daemon-reload: yes
+    name: network-restart.timer
+    state: started
+    enabled: yes
+

@@ -1,0 +1,17 @@
+---
+# tasks file for pirrigator
+
+- name: copy pirrigator systemd unit
+  template:
+    src: templates/systemd/pirrigator.service
+    dest: /lib/systemd/system/pirrigator.service
+    owner: root
+    group: root
+
+- name: start pirrigator service
+  systemd:
+    daemon-reload: yes
+    name: pirrigator.service
+    state: started
+    enabled: yes
+

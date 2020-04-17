@@ -1,0 +1,38 @@
+---
+# tasks file for timelapse
+
+- name: Mount remote filesystem for Timelapse images
+  mount:
+    path: "{{nfs_mount_local}}"
+    src: "{{nfs_mount_remote}}"
+    fstype: nfs
+    opts: rw
+    state: present
+
+- name: Install Timelapse systemd timer
+  template:
+    src: templates/systemd/timelapse.timer
+    dest: /lib/systemd/system/timelapse.timer
+    owner: root
+    group: root
+
+- name: Install Timelapse systemd service
+  template:
+    src: templates/systemd/timelapse.service
+    dest: /lib/systemd/system/timelapse.service
+    owner: root
+    group: root
+
+- name: Install Timelapse scripts
+  template:
+    src: templates/scripts/timelapse.sh
+    dest: "{{timelapse_executable}}"
+    owner: root
+    group: root
+
+- name: Start Timelapse systemd timer
+  systemd:
+    daemon-reload: yes
+    name: timelapse.timer
+    state: started
+    enabled: yes

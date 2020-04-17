@@ -1,0 +1,42 @@
+- hosts: raspberrypi
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: Ensure Python installed
+      shell: 'pacman -Sy --noconfirm python3'
+      args:
+        creates: "{{ansible_python_interpreter}}"
+
+
+- name: Set up the Pirrigator host
+  hosts: pirrigator
+  roles:
+    - archlinuxarm
+    - flaky-network
+    - pirrigator
+    - timelapse
+  vars:
+    nfs_mount_remote: 192.168.0.3:/data/pirrigator
+
+
+- name: Set up the Garden Lightshow host
+  hosts: gardenpi
+  roles:
+    - archlinuxarm
+    - flaky-network
+    - lightshow
+
+
+- name: Set up the Window Controller host
+  hosts: veluxpi
+  roles:
+    - velux
+
+
+- name: Set up the test Raspberry Pi
+  hosts: alarmpi
+  roles:
+    - archlinuxarm
+    - flaky-network
+    - lightshow
+    - velux

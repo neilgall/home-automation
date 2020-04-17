@@ -1,0 +1,6 @@
+[Unit]
+Description=Timelapse capture service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash {{timelapse_executable}}
