@@ -2,6 +2,7 @@
 # tasks file for pirrigator
 
 - name: Install Pirrigator systemd unit
+  register: systemd_pirrigator
   template:
     src: templates/systemd/pirrigator.service
     dest: /lib/systemd/system/pirrigator.service
@@ -10,6 +11,7 @@
 
 
 - name: Start Pirrigator service
+  when: systemd_pirrigator.changed
   systemd:
     daemon-reload: yes
     name: pirrigator.service

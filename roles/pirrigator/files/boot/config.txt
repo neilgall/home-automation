@@ -2,21 +2,24 @@
 
 hdmi_blanking=2
 disable_splash=1
-gpu_mem=128
 
 start_file=start_x.elf
 fixup_file=fixup_x.dat
 initramfs initramfs-linux.img followkernel
+
+# hardware
 dtparam=i2c_arm=on
 dtparam=spi=on
+
+# camera support
+over_voltage=6
+over_voltage_min=6
+gpu_mem=128
 
 # power saving
 arm_freq_min=250
 core_freq_min=100
 sdram_freq_min=150
-over_voltage=6
-over_voltage_min=0
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=on
-
 
