@@ -1,0 +1,8 @@
+[Unit]
+Description=Timelapse Movie Creation Service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash {{timelapse_movie_executable}} {{timelapse_store}}/images
+Environment=PUSHOVER_USER_KEY={{pushover_user_key}}
+Environment=PUSHOVER_API_TOKEN={{pushover_api_token}}

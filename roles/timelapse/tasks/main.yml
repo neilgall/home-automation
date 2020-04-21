@@ -3,8 +3,8 @@
 
 - name: Mount remote filesystem for Timelapse images
   mount:
-    path: "{{nfs_mount_local}}"
-    src: "{{nfs_mount_remote}}"
+    path: "{{nfs_mount_rpi}}"
+    src: "{{nfs_mount_host}}:{{nfs_mount_store}}"
     fstype: nfs
     opts: rw
     state: mounted
@@ -27,8 +27,8 @@
 
 
 - name: Install Timelapse scripts
-  template:
-    src: templates/scripts/timelapse.sh
+  copy:
+    src: files/scripts/timelapse.sh
     dest: "{{timelapse_executable}}"
     owner: root
     group: root

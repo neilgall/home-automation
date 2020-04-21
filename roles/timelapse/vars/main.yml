@@ -3,5 +3,5 @@
 
 timelapse_executable: /usr/local/bin/timelapse.sh
 
-# nfs_mount_remote needs defined when the role is attached to a host
-nfs_mount_local: /data
+# nfs_mount_host and nfs_mount_store need defined when the role is attached to a host
+nfs_mount_rpi: /data

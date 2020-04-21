@@ -1,0 +1,4 @@
+---
+# vars file for timelapse_store
+
+timelapse_movie_executable: /usr/local/bin/timelapse_movie.sh

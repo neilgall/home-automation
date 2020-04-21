@@ -3,4 +3,4 @@ Description=Timelapse capture service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash {{timelapse_executable}}
+ExecStart=/bin/bash {{timelapse_executable}} {{nfs_mount_rpi}}

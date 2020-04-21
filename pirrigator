@@ -1,7 +1,17 @@
 [raspberrypi]
 pirrigator
 
+[server]
+mustela
+
+
 [raspberrypi:vars]
+ansible_python_interpreter=/usr/bin/python
+ansible_user=alarm
+ansible_become=true
+
+
+[server:vars]
 ansible_python_interpreter=/usr/bin/python
 ansible_user=alarm
 ansible_become=true

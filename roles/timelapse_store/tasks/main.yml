@@ -1,0 +1,65 @@
+---
+# tasks file for timelapse_store
+
+- name: Update packages
+  pacman:
+    update_cache: yes
+    name:
+      - ffmpeg
+      - x264
+    state: present
+
+
+- name: Create the storage directory
+  file:
+    path: "{{timelapse_store}}"
+    state: directory
+    mode: '0777'
+
+
+- name: Set up the storage directory NFS export
+  lineinfile:
+    path: /etc/exports
+    regexp: "{{timelapse_store}}"
+    line: "{{timelapse_store}} 192.168.0.0/24(rw,no_subtree_check,anonuid=1000,anongid=1001)"
+    state: present
+
+
+- name: Export the storage directory
+  shell:
+    cmd: exportfs -a
+
+
+- name: Install the nightly timelapse movie script
+  copy:
+    src: files/scripts/timelapse_movie.sh
+    dest: "{{timelapse_movie_executable}}"
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: Install the nightly timelapse movie timer
+  template:
+    src: templates/systemd/timelapse_movie.timer
+    dest: /lib/systemd/system/timelapse_movie.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Install the nightly timelapse movie service
+  template:
+    src: templates/systemd/timelapse_movie.service
+    dest: /lib/systemd/system/timelapse_movie.service
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Enable the nightly movie timer
+  systemd:
+    daemon-reload: yes
+    name: timelapse_movie.timer
+    state: started
+    enabled: yes

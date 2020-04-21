@@ -1,5 +1,13 @@
 
-- name: Set up the Pirrigator host
+- name: Set up Timelapse NFS store
+  hosts: mustela
+  roles:
+    - timelapse_store
+  vars:
+    timelapse_store: /data/pirrigator
+
+
+- name: Set up the Pirrigator system
   hosts: pirrigator
   roles:
     - archlinuxarm
@@ -7,7 +15,8 @@
     - pirrigator
     - timelapse
   vars:
-    nfs_mount_remote: 192.168.0.3:/data/pirrigator
+    nfs_mount_host: mustela
+    nfs_mount_store: /data/pirrigator
 
 
 - name: Set up the Garden Lightshow host

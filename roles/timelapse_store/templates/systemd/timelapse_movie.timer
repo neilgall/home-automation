@@ -1,0 +1,8 @@
+[Unit]
+Description=Timelapse Movie Creation timer
+
+[Timer]
+OnCalendar=*-*-* 23:58:00
+
+[Install]
+WantedBy=timers.target
