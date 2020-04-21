@@ -13,7 +13,7 @@ _ROOT_CA_PATH = "./root-CA.crt"
 _CLIENT_ID = "garden-controller"
 _CLIENT_NAME = "Garden Controller"
 
-_LOG = logger.create("iot_listener", logger.INFO)
+_LOG = logger.create("iot_listener", logger.DEBUG)
 logger.create("AWSIoTPythonSDK.core", logger.WARN)
 
 
@@ -29,54 +29,62 @@ class IoTCoreClient:
 
     def create_shadow_handler(self, thing_name, handler):
         shadow = self._iot.createShadowHandlerWithName(thing_name, True)
+        return ShadowClient(shadow, handler)
 
-        @logger.log_with(_LOG, device=thing_name)
-        def do_update(state):
-            value = "ON" if state else "OFF"
-            shadow.shadowUpdate(json.dumps({ "state": { "reported": { "state": value } } }), None, 5)
 
-        @logger.log_with(_LOG, device=thing_name)
-        def on_get(payload, response_status, token):
-            state = json.loads(payload)['state']['desired']['state']
-            if state in ['ON', 'OFF']:
-                handler(state == "ON")
-
-        @logger.log_with(_LOG, device=thing_name)
+class ShadowClient:
+    def __init__(self, shadow, handler):
+        @logger.log_with(_LOG)
         def on_delta(payload, response_status, token):
             state = json.loads(payload)['state']['state']
             if state in ['ON', 'OFF']:
-                handler(state == "ON")
+                self._handler(state == "ON")
 
-        shadow.shadowGet(on_get, 5)
-        shadow.shadowRegisterDeltaCallback(on_delta)
-        return do_update
+        self._shadow = shadow
+        self._handler = handler
+        self._shadow.shadowRegisterDeltaCallback(on_delta)
+
+    def fetch_current_state(self):
+        @logger.log_with(_LOG)
+        def on_get(payload, response_status, token):
+            state = json.loads(payload)['state']['desired']['state']
+            if state in ['ON', 'OFF']:
+                self._handler(state == "ON")
+
+        self._shadow.shadowGet(on_get, 5)
+
+    @logger.log_with(_LOG)
+    def update_state(self, state):
+        value = "ON" if state else "OFF"
+        payload = json.dumps({ "state": { "reported": { "state": value } } })
+        self._shadow.shadowUpdate(payload, None, 5)
 
 
 class DeviceAdapter:
-    def __init__(self, endpoint, name, garden_controller):
+    def __init__(self, endpoint, name, device):
         self._endpoint = str(endpoint)
         self._name = str(name)
-        self._garden_controller = garden_controller
-        self._update_hook = None
+        self._device = device
+        self._shadow = None
 
     def __repr__(self):
         return f'DeviceAdapter[{endpoint}]'
 
     @logger.log_with(_LOG)
-    def set_update_hook(self, hook):
-        self._update_hook = hook
+    def set_shadow(self, shadow):
+        self._shadow = shadow
 
     @logger.log_with(_LOG)
     def shadow_to_device(self, state):
         if state:
-            self._garden_controller.lights_on(self._endpoint)
+            self._device.lights_on(self._endpoint)
         else:
-            self._garden_controller.lights_off(self._endpoint)
+            self._device.lights_off(self._endpoint)
 
     @logger.log_with(_LOG)
     def device_to_shadow(self, state):
         pushover.send(_CLIENT_NAME, f"{self._name} {'on' if state else 'off'}!")
-        self._update_hook(state)
+        self._shadow.update_state(state)
 
 
 if __name__ == "__main__":
@@ -86,11 +94,11 @@ if __name__ == "__main__":
         for endpoint, zone in lightshow.get_zones().items():
             friendly_name = zone['friendly_name']
             adapter = DeviceAdapter(endpoint, friendly_name, lightshow)
-            shadow_update = iot.create_shadow_handler(endpoint, adapter.shadow_to_device)
-            adapter.set_update_hook(shadow_update)
+            shadow = iot.create_shadow_handler(endpoint, adapter.shadow_to_device)
+            adapter.set_shadow(shadow)
             lightshow.set_update_hook(endpoint, adapter.device_to_shadow)
-
             _LOG.info(f"Created handler for {friendly_name}")
+            shadow.fetch_current_state()
 
         pushover.send(_CLIENT_ID, "Listener started")
 
