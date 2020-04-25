@@ -39,6 +39,15 @@
     mode: '0755'
 
 
+- name: Install the pushover script
+  copy:
+    src: files/scripts/pushover.py
+    dest: /usr/local/bin/pushover
+    owner: root
+    group: root
+    mode: "0755"
+
+
 - name: Install the nightly timelapse movie timer
   template:
     src: templates/systemd/timelapse_movie.timer
