@@ -3,11 +3,19 @@
 
 - name: Update packages
   pacman:
-    update_cache: yes
+    # update_cache: yes
     name:
       - ffmpeg
       - x264
     state: present
+
+
+- name: Install Python packages
+  pip:
+    name:
+      - requests
+      - Pillow
+      - munch
 
 
 - name: Create the storage directory
@@ -30,22 +38,12 @@
     cmd: exportfs -a
 
 
-- name: Install the nightly timelapse movie script
+- name: Install the image processing scripts
   copy:
-    src: files/scripts/timelapse_movie.sh
-    dest: "{{timelapse_movie_executable}}"
+    src: files/scripts/
+    dest: "{{executable_dir}}/"
     owner: root
     group: root
-    mode: '0755'
-
-
-- name: Install the pushover script
-  copy:
-    src: files/scripts/pushover.py
-    dest: /usr/local/bin/pushover
-    owner: root
-    group: root
-    mode: "0755"
 
 
 - name: Install the nightly timelapse movie timer
