@@ -15,7 +15,8 @@ cd ${tmp}
 	--datetime \
 	--width 1920 \
 	--height 1080 \
-	--exposure auto
+	--exposure auto \
+	--awb off
 
 mount ${MOUNT}
 test -d ${MOUNT}/images || exit 1

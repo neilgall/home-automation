@@ -2,19 +2,23 @@ import argparse
 import os
 import re
 from datetime import datetime, timedelta
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 from pirrigator_client import PirrigatorClient
+from text_writer import *
 from typing import Iterable
 
 
 _PATH_FORMAT = re.compile(r'img(\d\d)(\d\d)(\d\d)(\d\d)(\d\d).jpg')
+_ORIGIN = (0.7, 0.05)
+_CELL_SIZE = (0.18, 0.05)
 
-_TEXT_FORMATS = [
-  ('timestamp',   lambda x: datetime.fromtimestamp(x).strftime('%b %d'), lambda x: datetime.fromtimestamp(x).strftime('%H:%M')),
-  ('temperature', 'Temperature', lambda x: '%.1f°C' % x),
-  ('humidity',    'Humidity',    lambda x: '%.0f%%' % x),
-  ('pressure',    'Pressure',    lambda x: '%.0f mBar' % x)
+_TEXT_OVERLAYS = [
+  DateTimeOverlay(),
+  DataOverlay("temperature", "Temperature", '%.1f°C'),
+  DataOverlay('humidity',    'Humidity',    '%.0f%%'),
+  DataOverlay('pressure',    'Pressure',    '%.0f mBar')
 ]
+
 
 class ImageFile:
   def __init__(self, path: str):
@@ -34,46 +38,39 @@ class ImageFile:
     """
     return self._datetime
 
-  def out_path(self) -> str:
-    """
-    The output file path for this image
-    """
-    return self._out_path
-
   def overlay(self, data: dict):
     """
     Overlay the data in 'data' on the image
     """
-    image = Image.open(self._path).convert('RGBA')
-    text = Image.new('RGBA', image.size, (255,255,255,0))
-    width = image.size[0]
+    writer = TextWriter(Image.open(self._path), _ORIGIN, _CELL_SIZE)
 
-    font = ImageFont.truetype('VeraBd.ttf', 40)
-    draw = ImageDraw.Draw(text)
+    for y, overlay in enumerate(_TEXT_OVERLAYS):
+      overlay.draw(writer, 0, y, data)
 
-    x = width * 0.7
-    y = 50
-    for key, *cols in _TEXT_FORMATS:
-      if key in data:
-        cx = x
-        for col in cols:
-          txt = col(data[key]) if callable(col) else col
-          draw.text((cx,y), txt, font=font, fill=(255,255,255,255))
-          cx += width * 0.18
+    self._composite = writer.composite()
+    return self
 
-      y += 50
+  def show(self):
+    """
+    Show the composite image
+    """
+    self._composite.show()
 
-    out = Image.alpha_composite(image, text)
-    out.save(self._out_path)    
+  def save(self) -> str:
+    """
+    Write the composite image, returning the output file path
+    """
+    self._composite.save(self._out_path)
+    return self._out_path
 
 
-def write_index_file(path: str, images: Iterable[ImageFile]):
+def write_index_file(path: str, paths: Iterable[str]):
   """
   Write an ffmpeg concat index file to 'path' for 'images'
   """
   with open(path, 'wt') as f:
-    for image in images:
-      f.write(f"file '{image.out_path()}'\nduration 0.25\n")
+    for path in paths:
+      f.write(f"file '{path}'\nduration 0.25\n")
 
 
 def parse_command_line_args():
@@ -89,6 +86,12 @@ def parse_command_line_args():
     nargs='+',
     help='Images to process'
   )
+
+  parser.add_argument(
+    '--show',
+    action='store_true',
+    help='Show the first processed image instead of writing to disk'
+  )
   
   parser.add_argument(
     '--pirrigator',
@@ -100,6 +103,7 @@ def parse_command_line_args():
   parser.add_argument(
     '--index',
     action='store',
+    default='/tmp/index.txt',
     help='Path to ffmpeg concat index file for image sequence'
   )
 
@@ -115,10 +119,9 @@ if __name__ == "__main__":
   client = PirrigatorClient(args.pirrigator)
   weather = client.weather(start_time, end_time)
 
-  for i in images:
-    if not os.path.isfile(i.out_path()):
-      i.overlay(weather.at(i.datetime()))
-
-  if args.index:
+  if args.show:
+    images[0].overlay(weather.at(images[0].datetime())).show()
+  else:
     images_in_date_order = sorted(images, key=ImageFile.datetime)
-    write_index_file(args.index, images_in_date_order)
+    composite_images = (i.overlay(weather.at(i.datetime())).save() for i in images)
+    write_index_file(args.index, composite_images)
