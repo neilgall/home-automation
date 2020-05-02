@@ -1,6 +1,39 @@
 ---
 # tasks file for pirrigator
 
+- name: Install Pirrigator binary
+  copy:
+    src: files/build/pirrigator
+    dest: "{{pirrigator_executable}}"
+    owner: root
+    group: root
+    mode: "0755"
+
+
+- name: Create Pirrigator configuration directory
+  file:
+    path: "{{pirrigator_config_dir}}/"
+    state: directory
+
+
+- name: Install Pirrigator configuration
+  copy:
+    src: files/build/Settings.yaml
+    dest: "{{pirrigator_config_dir}}/Settings.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+
+
+- name: Install GPIO reset script
+  copy:
+    src: files/bin/reset-gpio.sh
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: "0755"
+
+
 - name: Install Pirrigator systemd unit
   register: systemd_pirrigator
   template:
