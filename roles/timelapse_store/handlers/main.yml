@@ -1,2 +1,7 @@
 ---
 # handlers file for timelapse_store
+
+- name: Export the storage directory
+  shell:
+    cmd: exportfs -a
+

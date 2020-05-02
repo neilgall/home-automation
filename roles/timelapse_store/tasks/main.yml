@@ -31,11 +31,7 @@
     regexp: "{{timelapse_store}}"
     line: "{{timelapse_store}} 192.168.0.0/24(rw,no_subtree_check,anonuid=1000,anongid=1001)"
     state: present
-
-
-- name: Export the storage directory
-  shell:
-    cmd: exportfs -a
+  notify: Export the storage directory
 
 
 - name: Install the image processing scripts
