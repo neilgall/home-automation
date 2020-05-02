@@ -1,0 +1,13 @@
+pacman-key --init
+pacman-key --populate archlinuxarm
+
+edit /etc/hostname
+disable DNSSec in /etc/systemd/resolved.conf
+reboot
+
+wifi-menu
+netctl enable wlan0-Forty-Eight
+
+pacman -Syyuu
+pacman -S python3 python-pip
+
