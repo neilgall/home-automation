@@ -16,7 +16,7 @@ cd ${tmp}
 	--width 1920 \
 	--height 1080 \
 	--exposure auto \
-	--awb off
+	--awb sun
 
 mount ${MOUNT}
 test -d ${MOUNT}/images || exit 1
