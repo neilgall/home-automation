@@ -1,6 +1,12 @@
 ---
 # tasks file for timelapse
 
+- name: Install packages
+  pacman:
+    name:
+      - nfs-utils
+    state: present
+
 - name: Mount remote filesystem for Timelapse images
   mount:
     path: "{{nfs_mount_rpi}}"
