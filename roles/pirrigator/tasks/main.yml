@@ -1,6 +1,30 @@
 ---
 # tasks file for pirrigator
 
+- name: Install packages
+  pacman:
+    name:
+      - i2c-tools
+      - lm_sensors
+    state: present
+
+
+- name: Enable I²C driver
+  lineinfile:
+    path: /etc/modules-load.d/raspberrypi.conf
+    line: i2c-dev
+    state: present
+  notify: reboot
+
+
+- name: Enable I²C BCM2708 driver
+  lineinfile:
+    path: /etc/modules-load.d/raspberrypi.conf
+    line: i2c-bcm2708
+    state: present
+  notify: reboot
+
+
 - name: Install Pirrigator binary
   copy:
     src: files/build/pirrigator

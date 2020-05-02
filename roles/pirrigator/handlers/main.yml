@@ -1,2 +1,6 @@
 ---
 # handlers file for pirrigator
+
+- name: reboot
+  reboot:
+    reboot_timeout: 300
