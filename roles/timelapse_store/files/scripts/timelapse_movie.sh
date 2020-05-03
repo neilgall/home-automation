@@ -2,8 +2,7 @@
 set -e
 
 DIR=$1
-WWW=/var/www/media
-PYTHON=/usr/bin/python3
+WWW=${2:-/var/www/media}
 
 if [ ! -d "${DIR}" ]; then
 	echo "usage: $0 <directory>"
@@ -15,9 +14,9 @@ TODAY=`date --date yesterday +%m%d`
 TODAY_LONG=`date --date yesterday "+%B %d"`
 
 GLOB=${DIR}/img*.jpg
-LIST=/tmp/${TODAY}.txt
+LIST=${TODAY}.txt
 
-${PYTHON} overlay_pirrigator_data.py \
+python overlay_pirrigator_data.py \
 	--pirrigator http://pirrigator:5000/api \
 	--index ${LIST} \
 	${GLOB}
@@ -31,7 +30,7 @@ ${PYTHON} overlay_pirrigator_data.py \
 	-movflags faststart \
 	${WWW}/${TODAY}.mp4
 
-rm -f ${LIST} ${GLOB} *.png
+rm -f ${LIST} ${GLOB} ${DIR}/*.png
 
 cat <<EOF >${WWW}/${TODAY}.html
 <!doctype html>
@@ -75,5 +74,5 @@ EOF
 
 ${PYTHON} pushover.py \
 	"Greenhouse" \
-	"Greenhouse timelapse for ${TODAY_LONG}" \
+	"Greenhouse timelapse for ${TODAY_LOMG}" \
 	https://neilgall.uk:41423/media/${TODAY}.html
