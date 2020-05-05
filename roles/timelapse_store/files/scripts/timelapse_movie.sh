@@ -72,7 +72,7 @@ video {
 </html>
 EOF
 
-${PYTHON} pushover.py \
+python pushover.py \
 	"Greenhouse" \
-	"Greenhouse timelapse for ${TODAY_LOMG}" \
+	"Greenhouse timelapse for ${TODAY_LONG}" \
 	https://neilgall.uk:41423/media/${TODAY}.html
