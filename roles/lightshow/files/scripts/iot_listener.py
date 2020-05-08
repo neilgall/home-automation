@@ -13,7 +13,7 @@ _ROOT_CA_PATH = "./root-CA.crt"
 _CLIENT_ID = "garden-controller"
 _CLIENT_NAME = "Garden Controller"
 
-_LOG = logger.create("iot_listener", logger.DEBUG)
+_LOG = logger.create("iot_listener", logger.INFO)
 logger.create("AWSIoTPythonSDK.core", logger.WARN)
 
 

@@ -108,8 +108,8 @@ class ControlThread(threading.Thread):
     @logger.log_with(_LOG)
     def _lights_on(self, zone):
         if not self._lights_state[zone]:
-            self._invoke_hook(zone, True)
             self._lights_state[zone] = True
+            self._invoke_hook(zone, True)
             for pin in _ZONES[zone]['control-pins']:
                 _LOG.debug(f"pin {pin} on")
                 gpio.output(pin, gpio.HIGH)
@@ -119,8 +119,8 @@ class ControlThread(threading.Thread):
     @logger.log_with(_LOG)
     def _lights_off(self, zone):
         if self._lights_state[zone]:
-            self._invoke_hook(zone, False)
             self._lights_state[zone] = False
+            self._invoke_hook(zone, False)
             for pin in _ZONES[zone]['control-pins']:
                 _LOG.debug(f"pin {pin} off")
                 gpio.output(pin, gpio.LOW)
