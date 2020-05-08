@@ -1,0 +1,27 @@
+---
+# tasks file for ssh-sudo-auth
+
+- name: Enable SSH based sudo authorisation
+  lineinfile:
+    path: /etc/pam.d/sudo
+    line: 'auth sufficient pam_ssh_agent_auth.so file=/etc/security/authorized_keys'
+    insertbefore: '^auth\s+include\s+system-auth'
+    state: present
+
+
+- name: Update sudoers
+  lineinfile:
+    path: /etc/sudoers
+    line: 'Defaults env_keep += "SSH_AUTH_SOCK"'
+    insertafter: '^#\s*Defaults'
+    state: present
+
+
+- name: Install authorisation key for sudo
+  copy:
+    src: files/keys/id_rsa.pub
+    dest: /etc/security/authorized_keys
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
