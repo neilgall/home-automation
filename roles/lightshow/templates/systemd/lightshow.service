@@ -4,7 +4,7 @@ Description=Lightshow Service
 [Service]
 Type=simple
 WorkingDirectory={{lightshow_install_dir}}
-ExecStart=/usr/bin/python3 ./iot_listener.py
+ExecStart=/usr/bin/python3 ./lightshow.py
 StandardOutput=syslog
 StandardError=syslog
 Restart=on-failure
