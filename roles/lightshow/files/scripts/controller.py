@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     import RPi.GPIO as gpio
 
 
-_log = logger.create("controller", logger.DEBUG)
+_log = logger.create("controller", logger.INFO)
 
 _ZONES = {
     'garden-lights': {
@@ -45,9 +45,10 @@ class Event(Enum):
 
 
 class Lightshow(threading.Thread):
-    def __init__(self):
+    def __init__(self, pushover):
         threading.Thread.__init__(self)
 
+        self._pushover = pushover
         self.queue = Queue()
 
     def zones(self):
@@ -85,6 +86,8 @@ class Lightshow(threading.Thread):
 
     def run(self):
         _log.debug("Starting control thread")
+        self._pushover.send(title='Lightshow', message='Controller started')
+
         self._switch_state = self._read_switch()
         self._lights_state = { zone: False for zone in _ZONES }
 
@@ -124,6 +127,7 @@ class Lightshow(threading.Thread):
             _log.debug(f"pin {pin} on")
             gpio.output(pin, gpio.HIGH)
             time.sleep(ON_DELAY)
+        self._send_pushover(zone, True)
 
     @logger.log_with(_log)
     def _lights_off(self, zone):
@@ -133,6 +137,7 @@ class Lightshow(threading.Thread):
         for pin in _ZONES[zone]['control-pins']:
             _log.debug(f"pin {pin} off")
             gpio.output(pin, gpio.LOW)
+        self._send_pushover(zone, False)
 
     @logger.log_with(_log)
     def _toggle_lights(self, zone):
@@ -140,6 +145,13 @@ class Lightshow(threading.Thread):
             self._lights_off(zone)
         else:
             self._lights_on(zone)
+
+    @logger.log_with(_log)
+    def _send_pushover(self, zone, state):
+        self._pushover.send(
+            title=_ZONES[zone]['friendly_name'],
+            message=f'Lights {"on" if state else "off"}!'
+        )
 
     # @logger.log_with(_log)
     def _read_switch(self):

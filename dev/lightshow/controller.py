@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     import RPi.GPIO as gpio
 
 
-_log = logger.create("controller", logger.DEBUG)
+_log = logger.create("controller", logger.INFO)
 
 _ZONES = {
     'garden-lights': {
@@ -86,6 +86,8 @@ class Lightshow(threading.Thread):
 
     def run(self):
         _log.debug("Starting control thread")
+        self._pushover.send(title='Lightshow', message='Controller started')
+
         self._switch_state = self._read_switch()
         self._lights_state = { zone: False for zone in _ZONES }
 
@@ -125,7 +127,7 @@ class Lightshow(threading.Thread):
             _log.debug(f"pin {pin} on")
             gpio.output(pin, gpio.HIGH)
             time.sleep(ON_DELAY)
-        self._send_pushover(self, zone, True)
+        self._send_pushover(zone, True)
 
     @logger.log_with(_log)
     def _lights_off(self, zone):
@@ -135,7 +137,7 @@ class Lightshow(threading.Thread):
         for pin in _ZONES[zone]['control-pins']:
             _log.debug(f"pin {pin} off")
             gpio.output(pin, gpio.LOW)
-        self._send_pushover(self, zone, False)
+        self._send_pushover(zone, False)
 
     @logger.log_with(_log)
     def _toggle_lights(self, zone):

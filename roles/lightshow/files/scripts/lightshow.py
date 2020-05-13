@@ -1,6 +1,8 @@
 #!/bin/env python3
 from iot_core_client import IoTCoreClient
 from controller import Lightshow, Event
+from pushover import Pushover
+import os
 
 if __name__ == "__main__":
   iot = IoTCoreClient(
@@ -10,7 +12,12 @@ if __name__ == "__main__":
     root_ca_path = './root-CA.crt'
   )
 
-  controller = Lightshow()
+  pushover = Pushover(
+    user_key = os.environ.get("PUSHOVER_USER_KEY"),
+    api_token = os.environ.get("PUSHOVER_API_TOKEN")
+  )
+
+  controller = Lightshow(pushover)
 
   for zone in controller.zones():
     iot.register_on_off_thing(

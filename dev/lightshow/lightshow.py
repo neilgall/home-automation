@@ -2,7 +2,7 @@
 from iot_core_client import IoTCoreClient
 from controller import Lightshow, Event
 from pushover import Pushover
-
+import os
 
 if __name__ == "__main__":
   iot = IoTCoreClient(

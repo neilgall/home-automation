@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 import requests
+import logger
+
+_log = logger.create("pushover", level=logger.INFO)
 
 class Pushover:
     """
     Very simple Pushover client
     """
+    @logger.log_with(_log)
     def __init__(self, user_key: str, api_token: str):
         self._user_key = user_key
         self._api_token = api_token
 
-    def send(self, title: str, message: str, url: str=None):
+    @logger.log_with(_log)
+    def send(self, title: str="", message: str="", url: str=None):
         """
         Send a notification with 'title', 'message' and optional URL
         """
