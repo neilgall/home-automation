@@ -13,22 +13,22 @@ logging.basicConfig(level=logging.INFO)
 
 
 _PATH_FORMAT = re.compile(r'img(\d\d)(\d\d)(\d\d)(\d\d)(\d\d).jpg')
-_MIN_BRIGHTNESS = 0.075
+_MIN_BRIGHTNESS = 0.04
 
 _WEATHER_X1 = 0.65
 _WEATHER_X2 = 0.83
 
 _WEATHER_OVERLAYS = [
-  DateTimeOverlay(_WEATHER_X1, _WEATHER_X2, 0.05),
-  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.10, "temperature", "Temperature", '%.1f°C'),
-  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.15, 'humidity',    'Humidity',    '%.0f%%'),
-  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.20, 'pressure',    'Pressure',    '%.0f mBar'),
+  DateTimeOverlay(_WEATHER_X1, _WEATHER_X2, 0.55),
+  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.60, "temperature", "Temperature", '%.1f°C'),
+  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.65, 'humidity',    'Humidity',    '%.0f%%'),
+  LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.70, 'pressure',    'Pressure',    '%.0f mBar'),
 ]
 
 _MOISTURE_OVERLAYS = {
-  'Cucumbers': PlainDataOverlay(0.50, 0.60, 'value', '%d'),
-  'Yellow Pigmy': PlainDataOverlay(0.37, 0.65, 'value', '%d'),
-  'Vintage Wine': PlainDataOverlay(0.33, 0.90, 'value', '%d')
+  'Cucumbers': LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.80, 'value', 'Cucumbers', '%d'),
+  'Yellow Pigmy': LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.85, 'value', 'Yellow Pigmy', '%d'),
+  'Vintage Wine': LabelledDataOverlay(_WEATHER_X1, _WEATHER_X2, 0.90, 'value', 'Vintage Wine', '%d')
 }
 
 

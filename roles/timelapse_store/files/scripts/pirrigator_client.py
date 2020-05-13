@@ -1,3 +1,4 @@
+import logging
 import requests
 from datetime import date, datetime, time, timedelta, timezone
 from munch import munchify, Munch
@@ -38,41 +39,45 @@ class PirrigatorClient:
   def __init__(self, base_url: str):
     self._base = base_url
 
+  def _apicall(self, url: str):
+    logging.debug(f'GET {url}')
+    rsp = requests.get(f'{self._base}{url}')
+    json = rsp.json()
+    logging.debug(f'{rsp.status_code} {json}')
+    return json
+
   def zones(self):
     """
     Get the list of configured zone names
     """
-    data = requests.get(f"{self._base}/zone/list").json()
-    return munchify(data)
+    return munchify(self._apicall('/zone/list'))
 
   def moisture_sensors(self):
     """
     Get the list of moisture sensor names, suitable as values
     for the 'sensor' parameter of 'moisture()'
     """
-    data = requests.get(f"{self._base}/moisture/sensors").json()
-    return munchify(data)
+    return munchify(self._apicall('/moisture/sensors'))
 
   def weather_history(self, start: datetime, end: datetime) -> TimeSeries:
     """
     Get all weather records between 'start' and 'end' as a 'TimeSeries'
     """
-    data = requests.get(f"{self._base}/weather/{_int_ts(start)}/{_int_ts(end)}").json()
-    return TimeSeries(data)
+    return TimeSeries(self._apicall(f'/weather/{_int_ts(start)}/{_int_ts(end)}'))
 
   def moisture_history(self, sensor: str, start: datetime, end: datetime) -> TimeSeries:
     """
     Get all moisture records between 'start' and 'end' as a 'TimeSeries'
     """
-    data = requests.get(f"{self._base}/moisture/{sensor}/{_int_ts(start)}/{_int_ts(end)}").json()
+    data = self._apicall(f'/moisture/{sensor}/{_int_ts(start)}/{_int_ts(end)}')
     return TimeSeries({ 'unix_time': r[0], 'value': r[1] } for r in data)
 
   def irrigation_history(self, zone: str, start: datetime, end: datetime) -> TimeSeries:
     """
     Get all the irrigation records between 'start' and 'end' as a 'TimeSeries'
     """
-    data = requests.get(f"{self._base}/zone/{zone}/irrigation/{_int_ts(start)}/{_int_ts(end)}").json()
-    return TimeSeries(data)
+    data = self._apicall(f'/zone/{zone}/irrigation/{_int_ts(start)}/{_int_ts(end)}')
+    return TimeSeries({ 'unix_time': r[0], 'duration': r[1]['secs'] } for r in data)
 
 
 if __name__ == "__main__":
@@ -80,6 +85,8 @@ if __name__ == "__main__":
   t = "12:00" if len(sys.argv) < 2 else sys.argv[1]
   h,m = (int(x) for x in t.split(':', maxsplit=1))
   time = datetime.combine(date.today(), time(hour=h, minute=m), timezone.utc)
+
+  logging.basicConfig(level=logging.DEBUG)
 
   p = PirrigatorClient('http://pirrigator:5000/api')
   hour = timedelta(seconds=3600)

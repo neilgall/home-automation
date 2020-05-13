@@ -74,5 +74,5 @@ EOF
 
 python pushover.py \
 	"Greenhouse" \
-	"Greenhouse timelapse for ${TODAY_LONG}" \
+	"Greenhouse timelapse for ${TODAY_LOMG}" \
 	https://neilgall.uk:41423/media/${TODAY}.html
