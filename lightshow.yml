@@ -1,0 +1,6 @@
+- name: Set up the Garden Lightshow host
+  hosts: gardenpi
+  roles:
+    - archlinuxarm
+    - flaky-network
+    - lightshow

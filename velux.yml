@@ -1,0 +1,6 @@
+
+- name: Set up the Window Controller host
+  hosts: veluxpi
+  roles:
+    - archlinuxarm
+    - velux
