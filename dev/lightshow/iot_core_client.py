@@ -6,7 +6,8 @@ import json
 import logger
 import time
 
-_log = logger.create("AWSIoTPythonSDK.core", logger.INFO)
+logger.create("AWSIoTPythonSDK.core", logger.DEBUG)
+_log = logger.create("iot_core_client", logger.INFO)
 
 class IoTCoreClient:
     def __init__(self, client_id: str, root_ca_path: str, host: str, port: int=443):
@@ -24,7 +25,7 @@ class IoTCoreClient:
         self._iot.configureAutoReconnectBackoffTime(1, 32, 20)
         self._iot.configureConnectDisconnectTimeout(10) 
         self._iot.configureMQTTOperationTimeout(5)
-        self._iot.connect()
+        self._iot.connect(keepAliveIntervalSecond=60)
         self._things = {}
         self._polls = []
 
@@ -42,16 +43,21 @@ class IoTCoreClient:
         shadow = self._iot.createShadowHandlerWithName(thing_name, True)
 
         @logger.log_with(_log)
+        def update_shadow(state):
+            shadow.shadowUpdate(json.dumps({ "state": { "reported": { "state": state } } }), None, 5)
+
+        @logger.log_with(_log)
         def on_delta(payload, response_status, token):
             state = json.loads(payload)["state"].get("state")
             if state is not None:
-                shadow.shadowUpdate(json.dumps({ "state": { "reported": { "state": state } } }), None, 5)
+                update_shadow(state)
                 queue.put(on_event if state == 'ON' else off_event)
 
         @logger.log_with(_log)
         def on_get(payload, response_status, token):
             state = json.loads(payload)['state']['desired']['state']
             if state in ['ON', 'OFF']:
+                update_shadow(state)
                 queue.put(on_event if state == 'ON' else off_event)
 
         shadow.shadowRegisterDeltaCallback(on_delta)
