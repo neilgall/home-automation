@@ -3,15 +3,13 @@ Description=Lightshow Service
 
 [Service]
 Type=simple
-WorkingDirectory={{lightshow_install_dir}}
-ExecStart=/usr/bin/python3 ./lightshow.py
+WorkingDirectory={{lightshow_lib_dir}}
+ExecStartPre=/bin/sh /usr/local/bin/reset-gpio.sh
+ExecStart={{lightshow_bin_dir}}/lightshow
 StandardOutput=syslog
 StandardError=syslog
 Restart=on-failure
-Environment=AWS_ACCESS_KEY_ID={{aws_access_key_id}}
-Environment=AWS_SECRET_ACCESS_KEY={{aws_secret_access_key}}
-Environment=PUSHOVER_USER_KEY={{pushover_user_key}}
-Environment=PUSHOVER_API_TOKEN={{pushover_api_token}}
+Environment=RUST_LOG=lightshow=debug
 
 [Install]
 WantedBy=multi-user.target

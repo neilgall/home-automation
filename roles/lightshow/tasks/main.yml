@@ -1,13 +1,7 @@
 ---
 # tasks file for lightshow
 
-- name: Install Python packages
-  pip:
-    name: AWSIoTPythonSDK,requests,RPi.GPIO
-
-
 - name: Install Lightshow systemd service
-  register: lightshow_systemd
   template:
     src: templates/systemd/lightshow.service
     dest: /lib/systemd/system/lightshow.service
@@ -15,21 +9,21 @@
     group: root
 
 
-- name: Install Lightshow scripts
+- name: Install Lightshow Configuration
   copy:
-    src: files/scripts/
-    dest: "{{lightshow_install_dir}}"
+    src: files/lib/
+    dest: "{{lightshow_lib_dir}}"
     owner: root
     group: root
+  notify: restart-lightshow
 
 
-- name: Start Lightshow systemd service
-  when: lightshow_systemd.changed
-  systemd:
-    daemon-reload: yes
-    name: lightshow.service
-    state: started
-    enabled: yes
+- name: Install Lightshow Binary
+  copy:
+    src: files/build/lightshow
+    dest: "{{lightshow_bin_dir}}"
+    mode: "0755"
+  notify: restart-lightshow
 
 
 - name: Set Lightshow host boot configuration
@@ -38,4 +32,4 @@
     dest: /boot/config.txt
     owner: root
     group: root
-    
+  notify: reboot    

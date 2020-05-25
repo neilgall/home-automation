@@ -2,9 +2,12 @@
 - name: Set up the Pirrigator system
   hosts: pirrigator
   roles:
-    - archlinuxarm
-    - flaky-network
-    - pirrigator
+    - role: archlinuxarm
+      tags: [system]
+    - role: flaky-network
+      tags: [system]
+    - role: pirrigator
+      tags: [app]
   vars:
     nfs_mount_host: mustela
     nfs_mount_store: /data/pirrigator

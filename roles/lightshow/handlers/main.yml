@@ -1,2 +1,14 @@
 ---
 # handlers file for lightshow
+
+- name: restart-lightshow
+  systemd:
+    daemon-reload: yes
+    name: lightshow.service
+    state: restarted
+    enabled: yes
+
+
+- name: reboot
+  reboot:
+    reboot_timeout: 300

@@ -1,2 +1,7 @@
 ---
 # handlers file for archlinuxarm
+
+- name: restart-systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: restarted

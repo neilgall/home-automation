@@ -22,18 +22,11 @@
 
 
 - name: Disable DNSSec
-  register: dnssec
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: '^#DNSSEC='
     line: DNSSEC=false
-
-
-- name: Restart systemd-resolved
-  when: dnssec.changed
-  systemd:
-    name: systemd-resolved
-    state: restarted
+  notify: restart-systemd-resolved
 
 
 - name: Update system

@@ -2,7 +2,8 @@
 - name: Set up Timelapse NFS store
   hosts: mustela
   roles:
-    - timelapse_store
+    - role: timelapse_store
+      tags: [app]
   vars:
     timelapse_store: /data/pirrigator
 
@@ -10,9 +11,12 @@
 - name: Set up the Timelapse Raspberry Pi
   hosts: pirrigator
   roles:
-    - archlinuxarm
-    - flaky-network
-    - timelapse
+    - role: archlinuxarm
+      tags: [system]
+    - role: flaky-network
+      tags: [system]
+    - role: timelapse
+      tags: [app]
   vars:
     nfs_mount_host: mustela
     nfs_mount_store: /data/pirrigator

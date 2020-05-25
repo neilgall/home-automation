@@ -1,8 +1,0 @@
-AWSIoTPythonSDK==1.4.8
-certifi==2020.4.5.1
-chardet==3.0.4
-fake-rpi==0.7.0
-idna==2.9
-numpy==1.18.4
-requests==2.23.0
-urllib3==1.25.9
