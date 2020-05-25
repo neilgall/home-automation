@@ -9,7 +9,7 @@ ExecStopPost={{reset_gpio_executable}}
 StandardOutput=syslog
 StandardError=syslog
 Restart=on-failure
-Environment="RUST_LOG=debug"
+Environment="RUST_LOG=pirrigator=debug"
 
 [Install]
 WantedBy=multi-user.target

@@ -49,15 +49,6 @@
     mode: "0644"
 
 
-- name: Install GPIO reset script
-  copy:
-    src: files/bin/reset-gpio.sh
-    dest: /usr/local/bin
-    owner: root
-    group: root
-    mode: "0755"
-
-
 - name: Install Pirrigator systemd unit
   register: systemd_pirrigator
   template:

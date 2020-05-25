@@ -51,3 +51,13 @@
       - python-pip
       - vim
     state: present
+
+
+- name: Install GPIO reset script
+  copy:
+    src: files/scripts/reset-gpio.sh
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: "0755"
+
