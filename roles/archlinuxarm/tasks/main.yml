@@ -1,25 +1,6 @@
 ---
 # tasks file for archlinuxarm
 
-- name: Remove Geo-IP based Pacman mirror
-  replace:
-    path: /etc/pacman.d/mirrorlist
-    regexp: '^(Server\s*=\s*http://mirror\.archlinuxarm\.org/.*)$'
-    replace: '# \1'
-
-
-- name: Enable European Pacman mirrors
-  replace:
-    path: /etc/pacman.d/mirrorlist
-    regexp: '^#\s*(Server\s*=\s*http://{{item}}\.mirror\.archlinuxarm\.org/.*)$'
-    replace: '\1'
-  loop:
-    - dk
-    - fr
-    - de
-    - de3
-    - nl
-
 
 - name: Disable DNSSec
   lineinfile:
