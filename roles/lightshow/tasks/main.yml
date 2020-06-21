@@ -7,7 +7,8 @@
     dest: /lib/systemd/system/lightshow.service
     owner: root
     group: root
-
+  notify: restart-lightshow
+  
 
 - name: Install Lightshow Configuration
   copy:
