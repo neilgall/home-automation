@@ -10,6 +10,7 @@ mustela
 ansible_python_interpreter=/usr/bin/python
 ansible_user=alarm
 ansible_become=true
+router_ip=192.168.86.1
 
 [server:vars]
 ansible_python_interpreter=/usr/bin/python

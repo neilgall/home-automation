@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ping -c2 192.168.0.1 > /dev/null
+ping -c2 {{router_ip}} > /dev/null
  
 if [ $? != 0 ]; then
 	echo "Restarting wlan0"

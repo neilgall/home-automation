@@ -2,8 +2,8 @@
 # tasks file for flaky-network
 
 - name: copy network-restart script
-  copy:
-    src: files/scripts/network-restart.sh
+  template:
+    src: templates/scripts/network-restart.sh
     dest: /usr/local/bin/network-restart.sh
     owner: root
     group: root
