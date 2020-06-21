@@ -29,7 +29,7 @@
   lineinfile:
     path: /etc/exports
     regexp: "{{timelapse_store}}"
-    line: "{{timelapse_store}} 192.168.0.0/24(rw,no_subtree_check,anonuid=1000,anongid=1001)"
+    line: "{{timelapse_store}} 192.168.86.0/24(rw,no_subtree_check,anonuid=1000,anongid=1001)"
     state: present
   notify: Export the storage directory
 
